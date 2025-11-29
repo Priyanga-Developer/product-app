@@ -1,7 +1,7 @@
 import { Modal, Form, Input, Select } from "antd";
 import { useEffect } from "react";
 
-export default function ProductForm({ open, onClose, onSubmit, editData }) {
+export default function ProductForm({ open, onClose, onSave, editData }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function ProductForm({ open, onClose, onSubmit, editData }) {
         form.validateFields().then((values) => {
           values.price = Number(values.price);
           values.stock = Number(values.stock || 0);
-          onSubmit(values);
+          onSave(values);
           form.resetFields();
         });
       }}

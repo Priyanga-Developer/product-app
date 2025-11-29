@@ -114,7 +114,7 @@ export default function Home() {
         open={open}
         onClose={() => setOpen(false)}
         onSave={handleSave}
-        editing={editing}
+        editData={editing}
       />
     </div>
   );
