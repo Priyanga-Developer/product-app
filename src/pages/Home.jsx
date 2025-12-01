@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
-import { Switch, Input, Button, Modal, message ,Typography } from "antd";
+import { Switch, Input, Button, Modal, message, Typography } from "antd";
 import ProductTable from "../components/ProductTable";
 import ProductGrid from "../components/ProductCardGrid";
 import ProductForm from "../components/ProductForm";
-import productsData from "../data/products.json";
 
 export default function Home() {
-  const [products, setProducts] = useState(productsData);
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [grid, setGrid] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+
+  useEffect(() => {
+    fetch("/products.json")
+      .then((res) => res.json())
+      .then((data) => setProducts(data));
+  }, []);
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -63,30 +68,26 @@ export default function Home() {
 
   return (
     <div style={{ padding: "30px" }}>
-   
-
-<Typography.Title
-  level={2}
-  style={{
-    textAlign: "center",
-    marginBottom: "10px",
-    color: "#1677ff",
-  }}
->
-  Product List
-</Typography.Title>
-
-
+      <Typography.Title
+        level={2}
+        style={{
+          textAlign: "center",
+          marginBottom: "10px",
+          color: "#1677ff",
+        }}
+      >
+        Product List
+      </Typography.Title>
 
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Input
           placeholder="Search..."
-          style={{ width: "70%" ,height: "40px"}}
+          style={{ width: "70%", height: "40px" }}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-          <span>{grid ?"Grid View:" : "Table View"}</span>
+          <span>{grid ? "Grid View:" : "Table View"}</span>
           <Switch checked={grid} onChange={(v) => setGrid(v)} />
           <Button type="primary" onClick={handleAdd}>
             Add Product
