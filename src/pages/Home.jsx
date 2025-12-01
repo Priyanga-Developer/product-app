@@ -12,17 +12,17 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  // ✅ Load products.json ONCE
+  // Load products.json 
   useEffect(() => {
     fetch("/products.json")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Error loading JSON:", err));
-  }, []); // ONLY ONCE
+  }, []); 
 
-  const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
+const filtered = (products || []).filter((p) =>
+  p?.name?.toLowerCase().includes(search.toLowerCase() || "")
+);
 
   const handleAdd = () => {
     setEditing(null);
