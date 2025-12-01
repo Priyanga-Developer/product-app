@@ -8,19 +8,20 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [grid, setGrid] = useState(false);
+
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  // Load initial data (Vercel FIX)
+  // Load products once on mount
   useEffect(() => {
     fetch("/products.json")
       .then((res) => res.json())
       .then((data) => setProducts(data))
-      .catch(() => setProducts([]));
+      .catch((err) => console.error("JSON Load Error:", err));
   }, []);
 
   const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
+    p.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleAdd = () => {
@@ -30,14 +31,12 @@ export default function Home() {
 
   const handleSave = (values) => {
     if (editing) {
-      // Update product
       const updated = products.map((p) =>
         p.id === editing.id ? { ...editing, ...values } : p
       );
       setProducts(updated);
       message.success("Product updated");
     } else {
-      // Add new at top
       const newItem = {
         id: Date.now(),
         createdAt: new Date().toISOString(),
@@ -69,14 +68,7 @@ export default function Home() {
 
   return (
     <div style={{ padding: "30px" }}>
-      <Typography.Title
-        level={2}
-        style={{
-          textAlign: "center",
-          marginBottom: "10px",
-          color: "#1677ff",
-        }}
-      >
+      <Typography.Title level={2} style={{ textAlign: "center", color: "#1677ff" }}>
         Product List
       </Typography.Title>
 
@@ -98,26 +90,13 @@ export default function Home() {
 
       <div style={{ marginTop: "20px" }}>
         {grid ? (
-          <ProductGrid
-            products={filtered}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <ProductGrid products={filtered} onEdit={handleEdit} onDelete={handleDelete} />
         ) : (
-          <ProductTable
-            products={filtered}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <ProductTable products={filtered} onEdit={handleEdit} onDelete={handleDelete} />
         )}
       </div>
 
-      <ProductForm
-        open={open}
-        onClose={() => setOpen(false)}
-        onSave={handleSave}
-        editData={editing}
-      />
+      <ProductForm open={open} onClose={() => setOpen(false)} onSave={handleSave} editData={editing} />
     </div>
   );
 }

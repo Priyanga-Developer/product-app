@@ -1,17 +1,26 @@
 import { Modal, Form, Input, Select } from "antd";
 import { useEffect } from "react";
 
-export default function ProductForm({ open, onClose, onSave, editing }) {
+export default function ProductForm({ open, onClose, onSave, editData }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (editing) form.setFieldsValue(editing);
+    if (editData) form.setFieldsValue(editData);
     else form.resetFields();
-  }, [editing]);
+  }, [editData]);
+
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      values.price = Number(values.price);
+      values.stock = Number(values.stock || 0);
+      onSave(values);
+      form.resetFields();
+    });
+  };
 
   return (
     <Modal
-      title={editing ? "Edit Product" : "Add Product"}
+      title={editData ? "Edit Product" : "Add Product"}
       open={open}
       centered
       okText="Save"
@@ -20,17 +29,10 @@ export default function ProductForm({ open, onClose, onSave, editing }) {
         form.resetFields();
         onClose();
       }}
-      onOk={() => {
-        form.validateFields().then((values) => {
-          values.price = Number(values.price);
-          values.stock = Number(values.stock || 0);
-          onSave(values);
-          form.resetFields();
-        });
-      }}
+      onOk={handleSubmit} // Cleanly separated
+      destroyOnClose={true}  // FIX: Prevents form reuse issues
     >
-      <Form form={form} layout="vertical" style={{ marginTop: 10 }}>
-        {/* NAME */}
+      <Form form={form} layout="vertical">
         <Form.Item
           name="name"
           label="Product Name"
@@ -39,7 +41,6 @@ export default function ProductForm({ open, onClose, onSave, editing }) {
           <Input placeholder="Enter product name" />
         </Form.Item>
 
-        {/* PRICE */}
         <Form.Item
           name="price"
           label="Price (₹)"
@@ -53,17 +54,9 @@ export default function ProductForm({ open, onClose, onSave, editing }) {
             },
           ]}
         >
-          <Input
-            placeholder="Enter price"
-            onChange={(e) => {
-              const v = e.target.value;
-              if (/^[0-9]*\.?[0-9]*$/.test(v))
-                form.setFieldsValue({ price: v });
-            }}
-          />
+          <Input placeholder="Enter price" />
         </Form.Item>
 
-        {/* CATEGORY */}
         <Form.Item
           name="category"
           label="Category"
@@ -82,7 +75,6 @@ export default function ProductForm({ open, onClose, onSave, editing }) {
           />
         </Form.Item>
 
-        {/* STOCK */}
         <Form.Item
           name="stock"
           label="Stock"
@@ -95,25 +87,17 @@ export default function ProductForm({ open, onClose, onSave, editing }) {
             },
           ]}
         >
-          <Input
-            placeholder="Enter stock quantity"
-            onChange={(e) => {
-              const v = e.target.value;
-              if (/^[0-9]*$/.test(v)) form.setFieldsValue({ stock: v });
-            }}
-          />
+          <Input placeholder="Enter stock quantity" />
         </Form.Item>
 
-        {/* TAGS — NEW FIELD */}
         <Form.Item name="tags" label="Tags">
           <Select
             mode="tags"
-            placeholder="Add tags (press enter)"
+            placeholder="Add tags"
             style={{ width: "100%" }}
           />
         </Form.Item>
 
-        {/* DESCRIPTION */}
         <Form.Item name="description" label="Description">
           <Input.TextArea rows={3} placeholder="Enter product description" />
         </Form.Item>
