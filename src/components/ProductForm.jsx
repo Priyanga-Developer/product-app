@@ -1,17 +1,17 @@
 import { Modal, Form, Input, Select } from "antd";
 import { useEffect } from "react";
 
-export default function ProductForm({ open, onClose, onSave, editData }) {
+export default function ProductForm({ open, onClose, onSave, editing }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (editData) form.setFieldsValue(editData);
+    if (editing) form.setFieldsValue(editing);
     else form.resetFields();
-  }, [editData]);
+  }, [editing]);
 
   return (
     <Modal
-      title={editData ? "Edit Product" : "Add Product"}
+      title={editing ? "Edit Product" : "Add Product"}
       open={open}
       centered
       okText="Save"
