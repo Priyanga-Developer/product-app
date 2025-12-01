@@ -8,14 +8,15 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [grid, setGrid] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
+  // Load initial data (Vercel FIX)
   useEffect(() => {
     fetch("/products.json")
       .then((res) => res.json())
-      .then((data) => setProducts(data));
+      .then((data) => setProducts(data))
+      .catch(() => setProducts([]));
   }, []);
 
   const filtered = products.filter((p) =>
@@ -29,14 +30,14 @@ export default function Home() {
 
   const handleSave = (values) => {
     if (editing) {
-      // update
+      // Update product
       const updated = products.map((p) =>
         p.id === editing.id ? { ...editing, ...values } : p
       );
       setProducts(updated);
       message.success("Product updated");
     } else {
-      // add new at top
+      // Add new at top
       const newItem = {
         id: Date.now(),
         createdAt: new Date().toISOString(),
@@ -115,7 +116,7 @@ export default function Home() {
         open={open}
         onClose={() => setOpen(false)}
         onSave={handleSave}
-        editing={editing}
+        editData={editing}
       />
     </div>
   );
